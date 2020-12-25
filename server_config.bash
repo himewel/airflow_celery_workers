@@ -12,7 +12,7 @@ replace() {
 
 install_packages() {
     echo 'Update repository'
-    apt-get update -qq
+    apt-get update -qqq
     echo 'Upgrade ...'
     apt-get upgrade -qqq
     echo 'Install curl'
@@ -47,9 +47,9 @@ config_nginx() {
 setup_services() {
     curl -sSO https://dl.google.com/cloudagents/add-monitoring-agent-repo.sh
     bash add-monitoring-agent-repo.sh
-    apt-get-get update -qqq
-    apt-get-get install stackdriver-agent -qqq
-    rm -rf add-monitoring-agent-repo.sh
+    apt-get update -qqq
+    apt-get install stackdriver-agent -qqq
+    rm add-monitoring-agent-repo.sh
 
     service stackdriver-agent start
     systemctl enable stackdriver-agent
