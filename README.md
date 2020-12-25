@@ -24,3 +24,7 @@ sudo docker-compose up -d --scale worker=4
 ```
 
 So, if your VM has an external IP like `123.456.789.101` you will get access to the UIs in `http://123.456.789.101` and `http://123.456.789.101/flower/`. Don't forget to enable the http access in the machine settings. By default, the UIs can be accessed with login `admin` and password `admin`. You can can set better credentials in the `docker-compose.yaml` file in `x-default-user` section.
+
+![](img/airflow.png)
+
+![](img/flower.png)
