@@ -28,3 +28,5 @@ So, if your VM has an external IP like `123.456.789.101` you will get access to 
 ![](img/airflow.png)
 
 ![](img/flower.png)
+
+![](img/flower_monitor.png)
