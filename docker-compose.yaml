@@ -2,11 +2,11 @@ version: '3.7'
 
 x-connections: &commonConnections
     AIRFLOW__CORE__EXECUTOR: 'CeleryExecutor'
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://airflow:airflow@postgres:5432/airflow'
     AIRFLOW__CELERY__RESULT_BACKEND: 'db+postgresql://airflow:airflow@postgres:5432/airflow'
     AIRFLOW__CELERY__BROKER_URL: 'redis://redis:6379/1'
 
 x-airflow-environment: &airflowEnvironment
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://airflow:airflow@postgres:5432/airflow'
     PYTHONPATH: '/home/airflow/dags'
     AIRFLOW_HOME: '/home/airflow'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'TRUE'
@@ -23,7 +23,6 @@ x-default-user: &defaultUser
 
 services:
     postgres:
-        container_name: postgres
         image: postgres:12-alpine
         environment:
             POSTGRES_USER: airflow
@@ -33,13 +32,11 @@ services:
             - 5432:5432
 
     redis:
-        container_name: redis
         image: redis:6.0.9-alpine
         ports:
             - 6379:6379
 
     scheduler:
-        container_name: scheduler
         image: apache/airflow:2.0.0-python3.8
         depends_on:
             - postgres
@@ -49,11 +46,10 @@ services:
         command: >
             bash -c "
                 airflow db upgrade; \
-                rm /home/airflow/airflow-scheduler.*; \
+                rm $${AIRFLOW_HOME}/airflow-scheduler.*; \
                 airflow scheduler;"
 
     webserver:
-        container_name: webserver
         image: apache/airflow:2.0.0-python3.8
         depends_on:
             - postgres
@@ -66,6 +62,7 @@ services:
             - 8080:8080
         command: >
             bash -c "
+                rm $${AIRFLOW_HOME}/airflow-webserver.*; \
                 airflow users create \
                     --role $${ROLE} \
                     --username $${USERNAME} \
@@ -76,7 +73,6 @@ services:
                 airflow webserver -p 8080"
 
     flower:
-        container_name: flower
         image: apache/airflow:2.0.0-python3.8
         depends_on:
             - scheduler
@@ -89,7 +85,7 @@ services:
             - 5555:5555
         command: >
             bash -c "
-                rm /home/airflow/airflow-flower.*; \
+                rm $${AIRFLOW_HOME}/airflow-flower.*; \
                 airflow celery flower \
                     -p 5555 \
                     -A $${USERNAME}:$${PASSWORD} \
@@ -97,10 +93,10 @@ services:
 
     worker:
         image: apache/airflow:2.0.0-python3.8
-        depends_on:
-            - redis
-            - scheduler
-            - webserver
-            - flower
-        environment: *commonConnections
-        command: airflow celery worker
+        environment:
+            <<: *commonConnections
+            <<: *airflowEnvironment
+        command: >
+            bash -c "
+                rm $${AIRFLOW_HOME}/airflow-worker.*; \
+                airflow celery worker;"
