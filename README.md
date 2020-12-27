@@ -1,5 +1,10 @@
 # Airflow Celery Workers
 
+<code><img height="20" src="https://cdn.iconscout.com/icon/free/png-512/docker-226091.png"> Docker</code> +
+<code><img height="20" src="https://avatars2.githubusercontent.com/u/33643075?s=280&v=4"> Airflow</code> +
+<code><img height="20" src="https://docs.celeryproject.org/en/master/_static/celery_512.png"> Celery</code> +
+<code><img height="20" src="https://www.nginx.com/wp-content/uploads/2018/08/NGINX-logo-rgb-large.png"> Nginx</code>
+
 This repo contains a setup to config Airflow 2.0 with Celery workers. To do it, two databases (Postgres and Redis) are setup: Postgres as the scheduler and webserver auxiliar; and Redis as the broker database and connection between the scheduler and workers. Besides the two databases and workers containers, the scheduler and other two UIs are setup in containers: Airflow Webserver UI (at port 8080) and Airflow Flower UI (at port 5555).
 
 ## How to use
