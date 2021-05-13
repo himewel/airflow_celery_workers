@@ -7,8 +7,8 @@ x-connections: &commonConnections
 
 x-airflow-environment: &airflowEnvironment
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://airflow:airflow@postgres:5432/airflow'
-    PYTHONPATH: '/home/airflow/dags'
-    AIRFLOW_HOME: '/home/airflow'
+    PYTHONPATH: '/opt/airflow/dags'
+    AIRFLOW_HOME: '/opt/airflow'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'TRUE'
     AIRFLOW__WEBSERVER__NAVBAR_COLOR: '#bca0dc'
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'TRUE'
@@ -17,9 +17,9 @@ x-default-user: &defaultUser
     USERNAME: 'admin'
     PASSWORD: 'admin'
     ROLE: 'Admin'
-    FIRSTNAME: 'Welbert'
-    LASTNAME: 'Castro'
-    EMAIL: 'welberthime@hotmail.com'
+    FIRSTNAME: 'Firstname'
+    LASTNAME: 'Lastname'
+    EMAIL: 'username@domain.com'
 
 services:
     postgres:
@@ -28,29 +28,25 @@ services:
             POSTGRES_USER: airflow
             POSTGRES_PASSWORD: airflow
             POSTGRES_DB: airflow
-        ports:
-            - 5432:5432
 
     redis:
         image: redis:6.0.9-alpine
-        ports:
-            - 6379:6379
 
     scheduler:
-        image: apache/airflow:2.0.0-python3.8
+        build:
+            context: .
+            dockerfile: Dockerfile
         depends_on:
             - postgres
         environment:
             <<: *commonConnections
             <<: *airflowEnvironment
-        command: >
-            bash -c "
-                airflow db upgrade; \
-                rm $${AIRFLOW_HOME}/airflow-scheduler.*; \
-                airflow scheduler;"
+        command: scheduler
 
     webserver:
-        image: apache/airflow:2.0.0-python3.8
+        build:
+            context: .
+            dockerfile: Dockerfile
         depends_on:
             - postgres
             - scheduler
@@ -60,20 +56,12 @@ services:
             <<: *defaultUser
         ports:
             - 8080:8080
-        command: >
-            bash -c "
-                rm $${AIRFLOW_HOME}/airflow-webserver.*; \
-                airflow users create \
-                    --role $${ROLE} \
-                    --username $${USERNAME} \
-                    --password $${PASSWORD} \
-                    --firstname $${FIRSTNAME} \
-                    --lastname $${LASTNAME} \
-                    --email $${EMAIL};
-                airflow webserver -p 8080"
+        command: webserver
 
     flower:
-        image: apache/airflow:2.0.0-python3.8
+        build:
+            context: .
+            dockerfile: Dockerfile
         depends_on:
             - scheduler
             - redis
@@ -83,20 +71,13 @@ services:
             <<: *defaultUser
         ports:
             - 5555:5555
-        command: >
-            bash -c "
-                rm $${AIRFLOW_HOME}/airflow-flower.*; \
-                airflow celery flower \
-                    -p 5555 \
-                    -A $${USERNAME}:$${PASSWORD} \
-                    -u /flower;"
+        command: flower
 
     worker:
-        image: apache/airflow:2.0.0-python3.8
+        build:
+            context: .
+            dockerfile: Dockerfile
         environment:
             <<: *commonConnections
             <<: *airflowEnvironment
-        command: >
-            bash -c "
-                rm $${AIRFLOW_HOME}/airflow-worker.*; \
-                airflow celery worker;"
+        command: worker
