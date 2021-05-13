@@ -3,9 +3,11 @@
 <code><img height="20" src="https://cdn.iconscout.com/icon/free/png-512/docker-226091.png"> Docker</code> +
 <code><img height="20" src="https://avatars2.githubusercontent.com/u/33643075?s=280&v=4"> Airflow</code> +
 <code><img height="20" src="https://docs.celeryproject.org/en/master/_static/celery_512.png"> Celery</code> +
-<code><img height="20" src="https://www.nginx.com/wp-content/uploads/2018/08/NGINX-logo-rgb-large.png"> Nginx</code>
+<code><img height="20" src="https://cdn4.iconfinder.com/data/icons/redis-2/1451/Untitled-2-512.png"> Redis</code>
 
-This repo contains a setup to config Airflow 2.0 with Celery workers. To do it, two databases (Postgres and Redis) are setup: Postgres as the scheduler and webserver auxiliar; and Redis as the broker database and connection between the scheduler and workers. Besides the two databases and workers containers, the scheduler and other two UIs are setup in containers: Airflow Webserver UI (at port 8080) and Airflow Flower UI (at port 5555).
+This repo contains a setup to config Airflow 2.0 with Celery workers. To do it, two databases (Postgres and Redis) are setup: Postgres as the scheduler and webserver auxiliar; and Redis as the broker database and connection between the scheduler and workers. Besides the two databases and workers containers, the scheduler and other two UIs are setup in containers: Airflow Webserver UI (at port 8080) and Airflow Flower UI (at port 5555). The following diagram represents the infrasctructure builded:
+
+<p align="center"><img src="https://kids-first.github.io/kf-airflow-dags/_images/airflow_services.png"></p>
 
 ## How to use
 
@@ -51,3 +53,7 @@ docker-compose up -d worker
 ![](img/flower.png)
 
 ![](img/flower_monitor.png)
+
+## References
+- https://github.com/apache/airflow
+- https://kids-first.github.io/kf-airflow-dags/index.html
