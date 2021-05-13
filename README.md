@@ -9,27 +9,27 @@
 
 This repo contains a setup to config Airflow 2.0 with Celery workers. To do it, two databases (Postgres and Redis) are setup: a Postgres container to serve as a metadatabase; and Redis as the broker database and connection between the scheduler and workers. Besides the two database and worker containers, the scheduler and other two UIs are also setup with docker: Airflow Webserver (by default, at port 8080) and Airflow Celery Flower (by default, at port 5555). The following diagram represents the infrasctructure builded:
 
-<p align="center"><img src="https://kids-first.github.io/kf-airflow-dags/_images/airflow_services.png"></p>
+<p align="center"><img src="./img/diagram.jpg"></p>
 
 ## How to use
 
 Locally, just build up the docker containers and set the desired number of workers. The following code example set 4 celery workers:
 
 ```shell
-docker-compose up -d --scale worker=4
+docker-compose up --detach --scale worker=4
 ```
 
 To build up only one worker, you can run the following command:
 
 ```shell
-docker-compose up -d
+docker-compose up --detach
 ```
 
 By default, you can access the Airflow Webserver UI in `http://localhost:8080` and the Airflow Flower UI in `http://localhost:5555/flower/`. In GCP virtual machines, you will need setup a proxy like Nginx to redirect the addresses to the ports 80 or 443 and then get access to the UI by the external IP. By running `install_dependencies.sh` and `proxy_config.sh` scripts, the dependencies like Docker, Nginx, StackDriver Agent and proxy configs are setted with the external IP of the virtual machine as the following sequence of commands:
 
 ```shell
 sudo bash config/install_dependencies.sh
-sudo docker-compose up -d --scale worker=4
+sudo docker-compose up --detach --scale worker=4
 sudo bash config/proxy_config.sh $(curl -s http://whatismyip.akamai.com/) config/proxy
 ```
 
@@ -39,7 +39,7 @@ To configure the workers in different machines from scheduler and web UIs, get u
 
 ```shell
 sudo bash config/install_dependencies.sh
-docker-compose up -d webserver flower
+docker-compose up --detach webserver flower
 sudo bash config/proxy_config.sh $(curl -s http://whatismyip.akamai.com/) config/proxy
 ```
 
@@ -47,11 +47,11 @@ To setup the workers, get up the worker VMs and install their dependencies as th
 
 ```shell
 sudo bash config/install_dependencies.sh
-docker-compose up -d worker
+docker-compose up --detach worker
 ```
 
 ![Airflow Webserver UI](img/airflow.png)
 
-![Flower dashboard](img/flower.png)
+![Flower Dashboard](img/flower.png)
 
-![](img/flower_monitor.png)
+![Flower Monitor](img/flower_monitor.png)
